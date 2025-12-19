@@ -11,6 +11,7 @@ class CheckoutController extends Controller
         // Lấy giỏ hàng từ session
         $cart = session()->get('cart', []);
 
+        // test commit bên này
         // Tính tổng tiền
         $total = 0;
         foreach ($cart as $item) {
