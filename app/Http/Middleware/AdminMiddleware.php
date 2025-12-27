@@ -16,10 +16,9 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->role === 'admin') {
-            return $next($request);
+        if (!auth()->check() || auth()->user()->role !== 'admin') {
+            abort(403, 'Bạn không có quyền truy cập.');
         }
-
-        abort(403, 'Bạn không có quyền truy cập!');
+        return $next($request);
     }
 }

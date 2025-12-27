@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
@@ -28,7 +28,7 @@ class CartController extends Controller
     public function add(Request $request)
     {
         $product_id = $request->product_id;
-        $quantity   = $request->quantity ?? 1;
+        $quantity = $request->quantity ?? 1;
 
         $product = Product::findOrFail($product_id);
 
@@ -38,14 +38,15 @@ class CartController extends Controller
             $cart[$product_id]['quantity'] += $quantity;
         } else {
             $cart[$product_id] = [
-                'name'     => $product->name,
-                'price'    => $product->price,
-                'image'    => $product->image,
+                'name' => $product->name,
+                'price' => $product->price,
+                'image' => $product->image,
                 'quantity' => $quantity,
             ];
         }
 
         session()->put('cart', $cart);
+        $this->updateCartCount($cart);
 
         // mua ngay
         if ($request->has('buy_now')) {
@@ -58,24 +59,61 @@ class CartController extends Controller
     // =========================
     // TĂNG / GIẢM SỐ LƯỢNG
     // =========================
+
+    private function updateCartCount($cart)
+    {
+        $count = 0;
+        foreach ($cart as $item) {
+            $count += (int)($item['quantity'] ?? 0); // tổng quantity
+        }
+        session()->put('cart_count', $count);
+    }
+
     public function update(Request $request)
     {
         $cart = session()->get('cart', []);
         $id = $request->product_id;
+        $action = $request->action;
 
         if (!isset($cart[$id])) {
             return back();
         }
 
-        if ($request->action === 'increase') {
+        if ($action === 'increase') {
             $cart[$id]['quantity']++;
+        } elseif ($action === 'decrease') {
+            // giữ đúng như UI của bạn: không giảm dưới 1
+            if ($cart[$id]['quantity'] > 1) {
+                $cart[$id]['quantity']--;
+            }
         }
 
-        if ($request->action === 'decrease' && $cart[$id]['quantity'] > 1) {
-            $cart[$id]['quantity']--;
-        }
+        // ✅ đồng bộ lại session cart + cart_count
+        $this->syncCartCount($cart);
 
-        session()->put('cart', $cart);
         return back();
     }
+
+    private function syncCartCount(array $cart): void
+    {
+        $count = array_sum(array_column($cart, 'quantity')); // tổng quantity
+        session(['cart' => $cart, 'cart_count' => $count]);
+    }
+
+    public function deleteSelected(Request $request)
+    {
+        $ids = array_filter(explode(',', (string)$request->ids));
+
+        $cart = session('cart', []);
+
+        foreach ($ids as $id) {
+            unset($cart[$id]);
+        }
+
+        $this->syncCartCount($cart);
+
+        return back()->with('success', 'Đã xóa các sản phẩm đã chọn');
+    }
+
+
 }

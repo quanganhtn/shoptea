@@ -7,93 +7,112 @@
         <h3 class="mb-3">Giỏ hàng của bạn</h3>
 
         @if (!empty($cart))
-            <div class="table-responsive">
-                <table class="table table-bordered align-middle mt-2 cart-table">
-                    <thead class="table-light">
-                        <tr class="text-center">
-                            <th style="width:48px">
-                                <input type="checkbox" id="checkAll">
-                            </th>
-                            <th style="width:90px">Hình ảnh</th>
-                            <th>Sản phẩm</th>
-                            <th style="width:150px">Số lượng</th>
-                            <th style="width:120px">Giá</th>
-                            <th style="width:140px">Thành tiền</th>
-                        </tr>
+            <div class="table-wrap">
+                <table class="table cart-table">
+                    <thead>
+                    <tr>
+                        <th style="width:48px">
+                            <input type="checkbox" id="checkAll">
+                        </th>
+                        <th style="width:90px">Hình ảnh</th>
+                        <th>Sản phẩm</th>
+                        <th style="width:120px">Giá</th>
+                        <th style="width:150px">Số lượng</th>
+                        <th style="width:140px">Thành tiền</th>
+                    </tr>
                     </thead>
 
                     <tbody>
-                        @foreach ($cart as $id => $item)
-                            <tr class="text-center cart-row">
-                                {{-- Checkbox --}}
-                                <td>
-                                    <input type="checkbox" class="item-check" data-price="{{ $item['price'] }}"
-                                        aria-label="Chọn sản phẩm">
-                                </td>
+                    @foreach ($cart as $id => $item)
+                        <tr class="cart-row">
+                            <td class="td-center">
+                                <input type="checkbox"
+                                       class="item-check"
+                                       data-id="{{ $id }}"
+                                       data-price="{{ $item['price'] }}"
+                                       aria-label="Chọn sản phẩm">
+                            </td>
 
-                                {{-- Image --}}
-                                <td>
-                                    <img src="{{ asset('uploads/' . $item['image']) }}" class="cart-img"
-                                        alt="{{ $item['name'] }}">
-                                </td>
+                            <td class="td-center">
+                                <img src="{{ asset('uploads/' . $item['image']) }}" class="cart-img"
+                                     alt="{{ $item['name'] }}">
+                            </td>
 
-                                {{-- Name --}}
-                                <td class="text-start">{{ $item['name'] }}</td>
+                            <td class="td-left">{{ $item['name'] }}</td>
 
-                                {{-- Quantity --}}
-                                <td>
-                                    <div class="d-flex justify-content-center align-items-center gap-2">
-                                        <form action="{{ route('cart.update') }}" method="POST" class="m-0">
-                                            @csrf
-                                            <input type="hidden" name="product_id" value="{{ $id }}">
-                                            <button name="action" value="decrease"
-                                                class="btn btn-sm btn-outline-secondary">
-                                                −
-                                            </button>
-                                        </form>
+                            <td class="td-center">
+                                <span class="cart-price">{{ number_format($item['price']) }} đ</span>
+                            </td>
 
-                                        <span class="px-2 fw-bold item-qty">{{ $item['quantity'] }}</span>
+                            <td class="td-center">
+                                <div class="qty-inline">
+                                    <form action="{{ route('cart.update') }}" method="POST" class="inline-form">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $id }}">
+                                        <button name="action" value="decrease" class="btn btn-outline-secondary btn-xs">
+                                            −
+                                        </button>
+                                    </form>
 
-                                        <form action="{{ route('cart.update') }}" method="POST" class="m-0">
-                                            @csrf
-                                            <input type="hidden" name="product_id" value="{{ $id }}">
-                                            <button name="action" value="increase"
-                                                class="btn btn-sm btn-outline-secondary">
-                                                +
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
+                                    <span class="item-qty">{{ $item['quantity'] }}</span>
 
-                                {{-- Price --}}
-                                <td class="text-center">
-                                    <span class="cart-price">{{ number_format($item['price']) }} đ</span>
-                                </td>
+                                    <form action="{{ route('cart.update') }}" method="POST" class="inline-form">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $id }}">
+                                        <button name="action" value="increase" class="btn btn-outline-secondary btn-xs">
+                                            +
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
 
-                                {{-- Total --}}
-                                <td class="text-center fw-bold text-danger">
-                                    {{ number_format($item['price'] * $item['quantity']) }} đ
-                                </td>
-                            </tr>
-                        @endforeach
+                            <td class="td-center total-red">
+                                {{ number_format($item['price'] * $item['quantity']) }} đ
+                            </td>
+                        </tr>
+                    @endforeach
                     </tbody>
                 </table>
             </div>
 
-            {{-- Thanh tổng + mua hàng (dính dưới) --}}
+            {{-- FORM xóa nhiều --}}
+            <form id="deleteSelectedForm" action="{{ route('cart.deleteSelected') }}" method="POST" class="d-none">
+                @csrf
+                <input type="hidden" name="ids" id="deleteIds">
+            </form>
+
             <div class="cart-summary">
-                <div class="cart-summary__left">
-                    <span class="cart-summary__label">
-                        Tổng cộng (<span id="totalQty">0</span> sản phẩm):
-                    </span>
-                    <span class="cart-summary__price" id="totalPrice">0 đ</span>
+
+                <div class="cart-summary__actions">
+                    <button type="button" class="btn btn-outline-primary" id="btnSelectAll">
+                        Chọn tất cả
+                    </button>
+
+                    <button type="button" class="btn btn-outline-danger disabled" id="btnDeleteSelected"
+                            aria-disabled="true">
+                        Xóa đơn hàng
+                    </button>
                 </div>
 
-                <a href="{{ route('checkout') }}" class="btn btn-success cart-summary__btn" id="buyBtn"
-                    aria-disabled="true">
-                    Mua hàng
-                </a>
+                <div class="cart-summary__right">
+                    <div class="cart-summary__text">
+                        <span class="cart-summary__label">
+                            Tổng cộng (<span id="totalQty">0</span> sản phẩm):
+                        </span>
+                        <span class="cart-summary__price" id="totalPrice">0 đ</span>
+                    </div>
+
+                    <form id="checkoutForm" action="{{ route('checkout') }}" method="GET" class="d-inline">
+                        <input type="hidden" name="ids" id="checkoutIds">
+                        <button type="submit" class="btn btn-success disabled" id="buyBtn" aria-disabled="true">
+                            Thanh toán
+                        </button>
+                    </form>
+
+                </div>
+
             </div>
+
         @else
             <p>Giỏ hàng trống!</p>
             <a href="{{ route('home') }}" class="btn btn-secondary">Quay lại mua hàng</a>
@@ -107,8 +126,27 @@
         const items = document.querySelectorAll('.item-check');
         const buyBtn = document.getElementById('buyBtn');
 
+        const btnSelectAll = document.getElementById('btnSelectAll');
+        const btnDeleteSelected = document.getElementById('btnDeleteSelected');
+        const deleteSelectedForm = document.getElementById('deleteSelectedForm');
+        const deleteIdsInput = document.getElementById('deleteIds');
+
         function formatVND(n) {
             return n.toLocaleString('vi-VN') + ' đ';
+        }
+
+        function getCheckedItems() {
+            return [...items].filter(i => i.checked);
+        }
+
+        function setBtnState(btn, enabled) {
+            if (enabled) {
+                btn.classList.remove('disabled');
+                btn.setAttribute('aria-disabled', 'false');
+            } else {
+                btn.classList.add('disabled');
+                btn.setAttribute('aria-disabled', 'true');
+            }
         }
 
         function updateTotal() {
@@ -129,33 +167,59 @@
             totalQtyEl.textContent = qtySum;
             totalPriceEl.textContent = formatVND(total);
 
-            // bật/tắt nút mua hàng
-            if (qtySum > 0) {
-                buyBtn.classList.remove('disabled');
-                buyBtn.setAttribute('aria-disabled', 'false');
-            } else {
-                buyBtn.classList.add('disabled');
-                buyBtn.setAttribute('aria-disabled', 'true');
-            }
+            setBtnState(buyBtn, qtySum > 0);
+            setBtnState(btnDeleteSelected, getCheckedItems().length > 0);
         }
 
-        // Tick từng item
         items.forEach(cb => cb.addEventListener('change', () => {
-            // cập nhật trạng thái checkAll
-            const checkedCount = [...items].filter(i => i.checked).length;
-            checkAll.checked = checkedCount === items.length;
+            const checkedCount = getCheckedItems().length;
+            checkAll.checked = checkedCount === items.length && items.length > 0;
             updateTotal();
         }));
 
-        // Check all
         if (checkAll) {
-            checkAll.addEventListener('change', function() {
+            checkAll.addEventListener('change', function () {
                 items.forEach(cb => cb.checked = this.checked);
                 updateTotal();
             });
         }
 
-        // Init
+        if (btnSelectAll) {
+            btnSelectAll.addEventListener('click', () => {
+                const allChecked = getCheckedItems().length === items.length && items.length > 0;
+                const next = !allChecked;
+                items.forEach(cb => cb.checked = next);
+                checkAll.checked = next;
+                updateTotal();
+            });
+        }
+
+        if (btnDeleteSelected) {
+            btnDeleteSelected.addEventListener('click', () => {
+                const checked = getCheckedItems();
+                if (checked.length === 0) return;
+
+                const ids = checked.map(i => i.dataset.id);
+                deleteIdsInput.value = ids.join(',');
+                deleteSelectedForm.submit();
+            });
+        }
+
         updateTotal();
     </script>
+    <script>
+        const checkoutForm = document.getElementById('checkoutForm');
+        const checkoutIdsInput = document.getElementById('checkoutIds');
+
+        checkoutForm.addEventListener('submit', function (e) {
+            const checked = getCheckedItems();
+            if (checked.length === 0) {
+                e.preventDefault();
+                return;
+            }
+            const ids = checked.map(i => i.dataset.id);
+            checkoutIdsInput.value = ids.join(',');
+        });
+    </script>
+
 @endsection

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
-use App\Models\Product;
+use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -16,12 +17,7 @@ class ProductController extends Controller
     }
 
     // Form thêm sản phẩm
-    public function create()
-    {
-        return view('admin.products.create');
-    }
 
-    // Lưu sản phẩm
     public function store(Request $request)
     {
         $request->validate([
@@ -45,7 +41,15 @@ class ProductController extends Controller
             ->with('success', 'Thêm sản phẩm thành công!');
     }
 
+    // Lưu sản phẩm
+
+    public function create()
+    {
+        return view('admin.products.create');
+    }
+
     // Form sửa sản phẩm
+
     public function edit($id)
     {
         $product = Product::findOrFail($id);

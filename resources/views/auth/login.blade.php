@@ -24,10 +24,10 @@
         @csrf
 
         <label>Tên Đăng Nhập</label>
-        <input type="text" name="login" class="form-control mb-2" required>
+        <input type="text" name="login" class="form-control mb-2" required autocomplete="username">
 
         <label>Mật khẩu</label>
-        <input type="password" name="password" class="form-control mb-2" required>
+        <input type="password" name="password" class="form-control mb-2" required autocomplete="current-password">
 
         <div class="form-check mb-2">
             <input type="checkbox" name="remember" class="form-check-input" id="remember">
@@ -37,5 +37,13 @@
         <button class="btn btn-primary w-100 mt-2">Đăng nhập</button>
     </form>
 
-    <p class="mt-3 text-center">Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký ngay</a></p>
+    <div class="auth-links auth-links--row">
+        <span>Chưa có tài khoản?</span>
+        <a class="link" href="{{ route('register') }}"> Đăng ký ngay</a>
+
+        <a href="{{ route('auth.google.redirect') }}" class="google-pill">
+            <span class="google-pill-icon">G</span>
+            Google
+        </a>
+    </div>
 @endsection

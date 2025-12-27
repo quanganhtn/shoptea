@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Cart;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -28,7 +28,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'phone' => ['required', 'regex:/^0\d{9}$/'],
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|confirmed|min:6',
+            'password' => 'required|min:6',
         ]);
 
         User::create([
@@ -64,11 +64,11 @@ class AuthController extends Controller
         $loginInput = $req->login;
         $field = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
 
-        if (Auth::attempt([$field => $loginInput, 'password' => $req->password], $req->remember)) {
+        if (Auth::attempt([$field => $loginInput, 'password' => $req->password], $req->remember ?? false)) {
 
             $req->session()->regenerate();
 
-            // 🔥 MERGE GIỎ HÀNG SESSION → DATABASE
+            // MERGE CART SESSION → DATABASE
             if (session()->has('cart')) {
                 foreach (session('cart') as $productId => $item) {
                     Cart::updateOrCreate(
@@ -77,15 +77,20 @@ class AuthController extends Controller
                             'product_id' => $productId,
                         ],
                         [
-                            'quantity' => DB::raw('quantity + ' . $item['quantity'])
+                            'quantity' => DB::raw('quantity + ' . (int)$item['quantity'])
                         ]
                     );
                 }
-                session()->forget('cart'); // ❗ xoá session sau khi merge
+                session()->forget('cart');
             }
 
-            return redirect()->route('home')
-                ->with('success', 'Đăng nhập thành công!');
+            // ✅ Redirect theo role
+            $user = Auth::user();
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard')->with('success', 'Đăng nhập admin thành công!');
+            }
+
+            return redirect()->route('home')->with('success', 'Đăng nhập thành công!');
         }
 
         return back()->with('error', 'Email/SĐT hoặc mật khẩu không đúng!');

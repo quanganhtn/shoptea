@@ -1,4 +1,4 @@
-@extends('layouts.home')
+@extends('admin.admin')
 
 @section('content')
     <div class="container my-4">
@@ -31,7 +31,8 @@
 
             <div class="mb-3">
                 <label class="form-label">Mô tả:</label>
-                <textarea name="description" class="form-control">{{ old('description') }}</textarea>
+                <textarea name="description" class="form-control"
+                          rows="6">{{ old('description') }}</textarea>
             </div>
 
             <div class="mb-3">

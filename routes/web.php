@@ -1,24 +1,23 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\HomeController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
 | Trang chủ & sản phẩm
 |--------------------------------------------------------------------------
 */
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/products/{id}', [HomeController::class, 'show'])
     ->name('products.show');
-
-
+Route::get('/search-suggest', [HomeController::class, 'searchSuggest'])
+    ->name('search.suggest');
 /*
 |--------------------------------------------------------------------------
 | Guest – Chưa đăng nhập
@@ -37,8 +36,13 @@ Route::middleware('guest')->group(function () {
         ->name('login');
     Route::post('/login', [AuthController::class, 'login'])
         ->name('login.post');
-});
 
+    //google
+    Route::get('/auth/google/redirect', [GoogleController::class, 'redirect'])
+        ->name('auth.google.redirect');
+    Route::get('/auth/google/callback', [GoogleController::class, 'callback'])
+        ->name('auth.google.callback');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -52,22 +56,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/checkout', [CheckoutController::class, 'index'])
         ->name('checkout');
+    Route::post('/checkout/placeOrder', [CheckoutController::class, 'placeOrder'])
+        ->name('checkout.placeOrder');
 });
-
-
-/*
-|--------------------------------------------------------------------------
-| Admin – Quản lý sản phẩm
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', 'admin'])
-    ->prefix('admin')
-    ->name('admin.')
-    ->group(function () {
-
-        Route::resource('products', ProductController::class);
-    });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -82,3 +73,7 @@ Route::post('/cart/add', [CartController::class, 'add'])
 
 Route::post('/cart/update', [CartController::class, 'update'])
     ->name('cart.update');
+
+Route::post('/cart/delete-selected', [CartController::class, 'deleteSelected'])
+    ->name('cart.deleteSelected');
+
