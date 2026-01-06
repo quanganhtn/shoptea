@@ -10,22 +10,63 @@ use Illuminate\Http\Request;
 class ProductController extends Controller
 {
     // Hiển thị danh sách sản phẩm
-    public function index()
+    // Hiển thị danh sách sản phẩm (Pagination + Filter + Sort)
+    public function index(Request $request)
     {
-        $products = Product::latest()->get();
-        return view('admin.products.index', compact('products'));
+        $query = Product::query()->with('category');
+
+        // 🔍 Tìm theo tên
+        if ($request->filled('q')) {
+            $query->where('name', 'like', '%' . $request->q . '%');
+        }
+
+        // 📁 Lọc theo category_id
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // 💰 Lọc giá
+        if ($request->filled('min')) {
+            $query->where('price', '>=', $request->min);
+        }
+
+        if ($request->filled('max')) {
+            $query->where('price', '<=', $request->max);
+        }
+
+        // 🔃 SORT (KHÔNG SORT THEO category nữa)
+        $sort = $request->get('sort', 'id');
+        $dir = $request->get('dir', 'desc');
+
+        if (!in_array($sort, ['id', 'name', 'price'])) {
+            $sort = 'id';
+        }
+        if (!in_array($dir, ['asc', 'desc'])) {
+            $dir = 'desc';
+        }
+
+        $products = $query
+            ->orderBy($sort, $dir)
+            ->paginate(20)
+            ->withQueryString();
+
+        // ✅ LẤY CATEGORY TỪ BẢNG categories
+        $categories = Category::orderBy('name')->get();
+
+        return view('admin.products.index', compact('products', 'categories', 'sort', 'dir'));
     }
+
 
     // Form thêm sản phẩm
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'description' => 'nullable',
+            'description' => 'nullable|string',
             'image' => 'nullable',
-            'category' => 'required',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         Product::create([
@@ -33,7 +74,7 @@ class ProductController extends Controller
             'price' => $request->price,
             'description' => $request->description,
             'image' => $request->image,
-            'category' => $request->category,
+            'category_id' => $request->category_id,
         ]);
 
         return redirect()
@@ -41,20 +82,24 @@ class ProductController extends Controller
             ->with('success', 'Thêm sản phẩm thành công!');
     }
 
+
     // Lưu sản phẩm
 
     public function create()
     {
-        return view('admin.products.create');
+        $categories = Category::orderBy('name')->get();
+        return view('admin.products.create', compact('categories'));
     }
+
 
     // Form sửa sản phẩm
 
     public function edit($id)
     {
         $product = Product::findOrFail($id);
-        $categories = Category::all();
-        return view('admin.products.edit', compact('product', 'categories'));
+        $categories = Category::orderBy('name')->get();
+        $order = Order::with(['items.product'])->findOrFail($id);
+        return view('admin.products.edit', compact('product', 'categories', 'order'));
     }
 
     // Cập nhật sản phẩm
@@ -63,14 +108,21 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'description' => 'nullable',
+            'description' => 'nullable|string',
             'image' => 'nullable',
-            'category' => 'required',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
-        $product->update($request->only(['name', 'price', 'description', 'image', 'category']));
+        $product->update([
+            'name' => $request->name,
+            'price' => $request->price,
+            'description' => $request->description,
+            'image' => $request->image,
+            'category_id' => $request->category_id,
+        ]);
+
 
         return redirect()->route('admin.products.index')->with('success', 'Cập nhật sản phẩm thành công!');
     }

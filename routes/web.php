@@ -5,6 +5,9 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MyOrderController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -58,6 +61,11 @@ Route::middleware('auth')->group(function () {
         ->name('checkout');
     Route::post('/checkout/placeOrder', [CheckoutController::class, 'placeOrder'])
         ->name('checkout.placeOrder');
+
+    Route::get('/my-orders', [MyOrderController::class, 'index'])->name('orders.my');
+    Route::get('/my-orders/{id}', [MyOrderController::class, 'show'])->name('orders.show');
+    
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 });
 
 /*
@@ -77,3 +85,8 @@ Route::post('/cart/update', [CartController::class, 'update'])
 Route::post('/cart/delete-selected', [CartController::class, 'deleteSelected'])
     ->name('cart.deleteSelected');
 
+
+Route::middleware('auth')->group(function () {
+    Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])
+        ->name('review.store');
+});

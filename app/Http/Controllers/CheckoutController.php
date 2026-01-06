@@ -2,62 +2,79 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
+use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
     public function index(Request $request)
     {
-        $cart = session()->get('cart', []);
-
-        if (empty($cart)) {
-            return redirect()->route('cart.index')
-                ->with('error', 'Giỏ hàng trống, không thể thanh toán.');
+        // Nếu muốn bắt buộc login ngay tại đây:
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để thanh toán.');
         }
 
-        // ids được chọn từ cart
+        // ids từ cart (checkbox)
         $idsStr = (string)$request->query('ids', '');
-        $ids = array_filter(explode(',', $idsStr));
+        $ids = array_values(array_filter(array_map('intval', explode(',', $idsStr))));
 
         if (empty($ids)) {
             return redirect()->route('cart.index')
                 ->with('error', 'Bạn chưa chọn sản phẩm nào để thanh toán.');
         }
 
-        // chỉ lấy sản phẩm được chọn
-        $checkoutCart = [];
-        foreach ($ids as $id) {
-            if (isset($cart[$id])) {
-                $checkoutCart[$id] = $cart[$id];
-            }
-        }
+        // ✅ LẤY GIỎ HÀNG TỪ DB carts
+        $rows = Cart::with('product')
+            ->where('user_id', Auth::id())
+            ->whereIn('product_id', $ids)
+            ->get();
 
-        if (empty($checkoutCart)) {
+        if ($rows->isEmpty()) {
             return redirect()->route('cart.index')
                 ->with('error', 'Sản phẩm đã chọn không còn trong giỏ hàng.');
         }
 
-        // lưu lại selection để place() dùng
-        session()->put('checkout_ids', array_keys($checkoutCart));
-
+        // build $checkoutCart giống format view đang dùng
+        $checkoutCart = [];
         $total = 0;
-        foreach ($checkoutCart as $item) {
-            $total += ($item['price'] ?? 0) * ($item['quantity'] ?? 0);
+
+        foreach ($rows as $row) {
+            if (!$row->product) continue;
+
+            $pid = $row->product_id;
+            $price = (float)$row->product->price;
+            $qty = (int)$row->quantity;
+
+            $checkoutCart[$pid] = [
+                'name' => $row->product->name,
+                'price' => $price,
+                'image' => $row->product->image,
+                'quantity' => $qty,
+            ];
+
+            $total += $price * $qty;
         }
 
-        return view('checkout.pay', [
+        // lưu selection để placeOrder dùng
+        session()->put('checkout_ids', array_keys($checkoutCart));
+
+        return view('User.checkout.pay', [
             'cart' => $checkoutCart,
             'total' => $total,
         ]);
     }
 
-
     public function placeOrder(Request $request)
     {
-        $cart = session()->get('cart', []);
-        $checkoutIds = session()->get('checkout_ids', []);
+        // bắt buộc login (route đã middleware auth là đẹp nhất)
+        $userId = Auth::id();
 
-        if (empty($cart) || empty($checkoutIds)) {
+        $checkoutIds = session()->get('checkout_ids', []);
+        if (empty($checkoutIds)) {
             return redirect()->route('cart.index')
                 ->with('error', 'Không tìm thấy sản phẩm cần thanh toán.');
         }
@@ -67,37 +84,63 @@ class CheckoutController extends Controller
             'phone' => ['required', 'regex:/^0\d{9}$/'],
             'address' => 'required|string|max:500',
             'note' => 'nullable|string|max:1000',
-            // bạn muốn chỉ COD thì để đúng 1 option:
             'payment' => 'required|in:cod',
         ]);
 
-        // tính total theo selection
-        $total = 0;
-        foreach ($checkoutIds as $id) {
-            if (isset($cart[$id])) {
-                $item = $cart[$id];
-                $total += ($item['price'] ?? 0) * ($item['quantity'] ?? 0);
+        // Lấy lại cart từ DB để tính total + tạo order_items
+        $cartRows = Cart::with('product')
+            ->where('user_id', $userId)
+            ->whereIn('product_id', $checkoutIds)
+            ->get();
+
+        if ($cartRows->isEmpty()) {
+            return redirect()->route('cart.index')
+                ->with('error', 'Giỏ hàng không còn sản phẩm đã chọn.');
+        }
+
+        return DB::transaction(function () use ($request, $cartRows, $checkoutIds, $userId) {
+
+            $total = 0;
+            foreach ($cartRows as $row) {
+                if (!$row->product) continue;
+                $total += (float)$row->product->price * (int)$row->quantity;
             }
-        }
 
-        // TODO: chỗ này sau này bạn lưu DB orders + order_items
 
-        // chỉ xóa các món đã thanh toán khỏi giỏ
-        foreach ($checkoutIds as $id) {
-            unset($cart[$id]);
-        }
+            $order = Order::create([
+                'user_id' => $userId,
+                'fullname' => $request->fullname,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'note' => $request->note,
+                'payment' => $request->payment,
+                'total_price' => $total,
+                'status' => 'pending',
+            ]);
 
-        // cập nhật lại session cart + cart_count
-        session()->put('cart', $cart);
-        $count = 0;
-        foreach ($cart as $item) $count += (int)($item['quantity'] ?? 0);
-        session()->put('cart_count', $count);
 
-        // xóa selection
-        session()->forget('checkout_ids');
+            // ✅ TẠO ORDER ITEMS
+            foreach ($cartRows as $row) {
+                if (!$row->product) continue;
 
-        return redirect()->route('home')
-            ->with('success', 'Đặt hàng thành công! Tổng tiền: ' . number_format($total) . 'đ');
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $row->product_id,
+                    'quantity' => (int)$row->quantity,
+                    'price' => (float)$row->product->price,
+                ]);
+            }
+
+            // ✅ XÓA CÁC MÓN ĐÃ THANH TOÁN KHỎI carts
+            Cart::where('user_id', $userId)
+                ->whereIn('product_id', $checkoutIds)
+                ->delete();
+
+            // clear selection
+            session()->forget('checkout_ids');
+
+            return redirect()->route('home')
+                ->with('success', 'Đặt hàng thành công! Mã đơn: #' . $order->id);
+        });
     }
-
 }

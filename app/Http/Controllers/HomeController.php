@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -13,40 +14,31 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        /* =======================
-            1. ĐỌC DỮ LIỆU TRANG CHỦ
-        ======================== */
-
+        // 1) homepage json
         $homepage = [];
         $path = storage_path('app/data/homepage.json');
-
         if (file_exists($path)) {
             $homepage = json_decode(File::get($path), true);
         }
 
-        /* =======================
-            2. TRUY VẤN SẢN PHẨM
-        ======================== */
+        // 2) danh mục từ DB (để home tự đổi theo admin)
+        $categories = Category::orderBy('name')->get();
 
-        $query = Product::query();
+        // 3) query sản phẩm
+        $query = Product::query()->with('category');
 
-        // Tìm theo tên
         if ($request->filled('keyword')) {
             $query->where('name', 'like', '%' . $request->keyword . '%');
         }
 
-        // Lọc theo danh mục
+        // lọc theo category_id
         if ($request->filled('category')) {
-            $query->where('category', 'like', '%' . $request->category . '%');
+            $query->where('category_id', $request->category);
         }
 
         $products = $query->latest()->get();
 
-        /* =======================
-            3. TRẢ VIEW
-        ======================== */
-
-        return view('checkout.home', compact('products', 'homepage'));
+        return view('User.checkout.home', compact('products', 'homepage', 'categories'));
     }
 
     /**
@@ -54,10 +46,14 @@ class HomeController extends Controller
      */
     public function show($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with([
+            'category',
+            'reviews.user' // lấy luôn người viết review
+        ])->findOrFail($id);
 
-        return view('checkout.show', compact('product'));
+        return view('User.checkout.show', compact('product'));
     }
+
 
     public function searchSuggest(Request $request)
     {
@@ -67,9 +63,14 @@ class HomeController extends Controller
             return response()->json([]);
         }
 
-        $products = Product::where('name', 'like', '%' . $keyword . '%')
+        $products = Product::with('category:id,name')
+            ->where('name', 'like', "%$keyword%")
+            ->orWhereHas('category', function ($q) use ($keyword) {
+                $q->where('name', 'like', "%$keyword%");
+            })
             ->limit(10)
-            ->get(['id', 'name']);
+            ->get(['id', 'name', 'category_id']);
+
 
         return response()->json($products);
     }
