@@ -2,6 +2,12 @@
 
 @section('title', 'ShopTea - Hành trình của hương trà')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/user/home.css') }}">
+@endpush
+
+{{--<link rel="stylesheet" href="{{ asset('css/home.css') }}">--}}
+
 @section('content')
 
     {{-- HERO --}}
@@ -58,12 +64,12 @@
                 @endphp
 
                 <div class="category-chips mt-3">
-                    <a href="{{ route('home') }}#products" class="chip {{ empty($currentCategory) ? 'active' : '' }}">
+                    <a href="{{ route('user') }}#products" class="chip {{ empty($currentCategory) ? 'active' : '' }}">
                         Tất cả
                     </a>
 
                     @foreach ($categories as $cat)
-                        <a href="{{ route('home', ['category' => $cat->id]) }}#products"
+                        <a href="{{ route('user', ['category' => $cat->id]) }}#products"
                            class="chip {{ (string)$currentCategory === (string)$cat->id ? 'active' : '' }}">
                             {{ $cat->name }}
                         </a>
@@ -143,8 +149,6 @@
                     </div>
                 @endfor
             </div>
-
-
         </div>
 
     </section>
@@ -160,28 +164,33 @@
 
             {{-- ✅ 3 cột ngang đúng --}}
             <div class="contact-grid">
-                <div class="contact-card">
+                <a class="contact-card" href="tel:{{ $homepage['contact']['phone'] ?? '0399869844' }}">
                     <div class="contact-card__icon">📞</div>
-                    <div class="contact-card__title">Điện thoại</div>
+                    <div class="contact-card__title">Gọi ngay</div>
                     <div class="contact-card__value">{{ $homepage['contact']['phone'] ?? '0399869844' }}</div>
-                </div>
+                    <div class="contact-card__hint">Bấm để gọi</div>
+                </a>
 
-                <div class="contact-card">
+                <a class="contact-card" href="mailto:{{ $homepage['contact']['email'] ?? 'phamquang4869@gmail.com' }}">
                     <div class="contact-card__icon">✉️</div>
                     <div class="contact-card__title">Email</div>
-                    <div class="contact-card__value">
-                        {{ $homepage['contact']['email'] ?? 'phamquang4869@gmail.com' }}
-                    </div>
-                </div>
+                    <div
+                        class="contact-card__value">{{ $homepage['contact']['email'] ?? 'phamquang4869@gmail.com' }}</div>
+                    <div class="contact-card__hint">Bấm để gửi mail</div>
+                </a>
 
-                <div class="contact-card">
+                @php
+                    $addr = $homepage['contact']['address'] ?? 'Tân Thịnh, TP Thái Nguyên, Việt Nam';
+                    $mapQ = urlencode($addr);
+                @endphp
+                <a class="contact-card" target="_blank" href="https://www.google.com/maps?q={{ $mapQ }}">
                     <div class="contact-card__icon">📍</div>
                     <div class="contact-card__title">Địa chỉ</div>
-                    <div class="contact-card__value">
-                        {{ $homepage['contact']['address'] ?? 'số 1,tổ 1, phường Phan Đình Phùng,Tỉnh Thái Nguyên' }}
-                    </div>
-                </div>
+                    <div class="contact-card__value">{{ $addr }}</div>
+                    <div class="contact-card__hint">Mở Google Maps</div>
+                </a>
             </div>
+
         </div>
     </section>
 

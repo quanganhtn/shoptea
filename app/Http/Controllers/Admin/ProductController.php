@@ -9,8 +9,7 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    // Hiển thị danh sách sản phẩm
-    // Hiển thị danh sách sản phẩm (Pagination + Filter + Sort)
+    // Danh sách sản phẩm (Pagination + Filter + Sort)
     public function index(Request $request)
     {
         $query = Product::query()->with('category');
@@ -34,7 +33,7 @@ class ProductController extends Controller
             $query->where('price', '<=', $request->max);
         }
 
-        // 🔃 SORT (KHÔNG SORT THEO category nữa)
+        // 🔃 SORT
         $sort = $request->get('sort', 'id');
         $dir = $request->get('dir', 'desc');
 
@@ -50,12 +49,10 @@ class ProductController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        // ✅ LẤY CATEGORY TỪ BẢNG categories
         $categories = Category::orderBy('name')->get();
 
         return view('admin.products.index', compact('products', 'categories', 'sort', 'dir'));
     }
-
 
     // Form thêm sản phẩm
 
@@ -64,6 +61,7 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
+            'stock' => 'required|integer|min:0', // ✅ thêm
             'description' => 'nullable|string',
             'image' => 'nullable',
             'category_id' => 'required|exists:categories,id',
@@ -72,6 +70,7 @@ class ProductController extends Controller
         Product::create([
             'name' => $request->name,
             'price' => $request->price,
+            'stock' => $request->stock, // ✅ thêm
             'description' => $request->description,
             'image' => $request->image,
             'category_id' => $request->category_id,
@@ -82,7 +81,6 @@ class ProductController extends Controller
             ->with('success', 'Thêm sản phẩm thành công!');
     }
 
-
     // Lưu sản phẩm
 
     public function create()
@@ -91,15 +89,14 @@ class ProductController extends Controller
         return view('admin.products.create', compact('categories'));
     }
 
-
     // Form sửa sản phẩm
 
     public function edit($id)
     {
         $product = Product::findOrFail($id);
         $categories = Category::orderBy('name')->get();
-        $order = Order::with(['items.product'])->findOrFail($id);
-        return view('admin.products.edit', compact('product', 'categories', 'order'));
+
+        return view('admin.products.edit', compact('product', 'categories'));
     }
 
     // Cập nhật sản phẩm
@@ -110,11 +107,13 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
+            'stock_add' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
             'image' => 'nullable',
             'category_id' => 'required|exists:categories,id',
         ]);
 
+        // 1) Update các field bình thường (KHÔNG đụng stock ở đây)
         $product->update([
             'name' => $request->name,
             'price' => $request->price,
@@ -123,9 +122,17 @@ class ProductController extends Controller
             'category_id' => $request->category_id,
         ]);
 
+        // 2) Cộng dồn tồn kho nếu có nhập thêm
+        $add = max(0, (int)$request->input('stock_add', 0));
+        if ($add > 0) {
+            $product->increment('stock', $add);
+        }
 
-        return redirect()->route('admin.products.index')->with('success', 'Cập nhật sản phẩm thành công!');
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Cập nhật sản phẩm thành công!');
     }
+
 
     // Xóa sản phẩm
     public function destroy($id)

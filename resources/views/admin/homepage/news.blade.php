@@ -3,6 +3,10 @@
 @section('title','Homepage - News')
 @section('page_title','🏠 Trang chủ / News')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/homepage.css') }}">
+@endpush
+
 @section('content')
     <div class="admin-container">
         <div class="admin-card">

@@ -90,7 +90,7 @@ class AuthController extends Controller
                 return redirect()->route('admin.dashboard')->with('success', 'Đăng nhập admin thành công!');
             }
 
-            return redirect()->route('home')->with('success', 'Đăng nhập thành công!');
+            return redirect()->route('user')->with('success', 'Đăng nhập thành công!');
         }
 
         return back()->with('error', 'Email/SĐT hoặc mật khẩu không đúng!');

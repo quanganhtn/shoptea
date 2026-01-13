@@ -1,0 +1,455 @@
+/* ===== My Orders (NO :root variables) ===== */
+
+/* HEAD */
+.myo-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px
+}
+
+.myo-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 950;
+    letter-spacing: .2px;
+    color: rgb(11, 7, 7)
+}
+
+.myo-sub {
+    margin-top: 4px;
+    color: rgb(11, 7, 7)
+}
+
+/* FILTER */
+.myo-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 12px 0 16px
+}
+
+.myo-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, .14);
+    background: linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .04));
+    color: rgb(11, 7, 7);
+    text-decoration: none;
+    transition: .14s ease;
+    font-weight: 900;
+    font-size: 13px
+}
+
+.myo-chip:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(180deg, rgba(255, 255, 255, .12), rgba(255, 255, 255, .06))
+}
+
+.myo-chip.is-active {
+    border-color: rgba(34, 197, 94, .45);
+    background: radial-gradient(700px 120px at 10% 0%, rgba(34, 197, 94, .25), transparent 55%),
+    linear-gradient(180deg, rgba(34, 197, 94, .20), rgba(255, 255, 255, .04));
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, .12)
+}
+
+/* LIST */
+.myo-list {
+    display: grid;
+    gap: 12px
+}
+
+.myo-card {
+    display: block;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, .12);
+    background: radial-gradient(700px 220px at 0% 0%, rgba(59, 130, 246, .12), transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .03));
+    border-radius: 18px;
+    padding: 14px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, .35);
+    transition: .14s ease;
+    position: relative;
+    overflow: hidden
+}
+
+.myo-card::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(120deg, transparent, rgba(34, 197, 94, .18), transparent);
+    opacity: 0;
+    transition: .14s ease
+}
+
+.myo-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(34, 197, 94, .28);
+    filter: brightness(1.03)
+}
+
+.myo-card:hover::after {
+    opacity: 1
+}
+
+.myo-card__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px
+}
+
+.myo-order__id {
+    font-weight: 950;
+    color: rgb(11, 7, 7)
+}
+
+.myo-order__time {
+    font-size: 12px;
+    margin-top: 4px;
+    color: rgb(11, 7, 7)
+}
+
+/* product line */
+.myo-prod {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns:56px 1fr auto;
+    gap: 12px;
+    align-items: center
+}
+
+.myo-prod__img {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .14);
+    background: radial-gradient(60px 60px at 30% 25%, rgba(34, 197, 94, .35), transparent 70%),
+    linear-gradient(180deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .04));
+    display: grid;
+    place-items: center;
+    color: rgb(11, 7, 7);
+    font-size: 22px;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, .25)
+}
+
+.myo-prod__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block
+}
+
+.myo-prod__name {
+    font-weight: 950;
+    line-height: 1.25;
+    color: rgb(11, 7, 7)
+}
+
+.myo-prod__sub {
+    margin-top: 4px;
+    font-size: 12px;
+    color: rgb(11, 7, 7)
+}
+
+.myo-prod__price {
+    font-weight: 950;
+    color: rgb(11, 7, 7);
+    white-space: nowrap;
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, .14);
+    background: rgba(255, 255, 255, .05)
+}
+
+/* bottom mini */
+.myo-card__bot {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap
+}
+
+.myo-mini__k {
+    font-size: 12px;
+    color: rgb(11, 7, 7)
+}
+
+.myo-mini__v {
+    font-weight: 900;
+    color: rgb(11, 7, 7)
+}
+
+.myo-go {
+    font-weight: 950;
+    color: rgba(34, 197, 94, .95)
+}
+
+/* badges */
+.myo-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, .16);
+    font-weight: 950;
+    font-size: 12px;
+    color: rgba(11, 7, 7, 0.47);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, .18)
+}
+
+.myo-badge--pending {
+    background: linear-gradient(135deg, rgba(234, 179, 8, .30), rgba(234, 179, 8, .12));
+    border-color: rgba(234, 179, 8, .45)
+}
+
+.myo-badge--confirmed {
+    background: linear-gradient(135deg, rgba(59, 130, 246, .30), rgba(59, 130, 246, .12));
+    border-color: rgba(59, 130, 246, .45)
+}
+
+.myo-badge--shipping {
+    background: linear-gradient(135deg, rgba(168, 85, 247, .30), rgba(168, 85, 247, .12));
+    border-color: rgba(168, 85, 247, .45)
+}
+
+.myo-badge--completed {
+    background: linear-gradient(135deg, rgba(34, 197, 94, .30), rgba(34, 197, 94, .12));
+    border-color: rgba(34, 197, 94, .45)
+}
+
+.myo-badge--cancelled {
+    background: linear-gradient(135deg, rgba(239, 68, 68, .26), rgba(239, 68, 68, .10));
+    border-color: rgba(239, 68, 68, .45);
+    color: #fecaca
+}
+
+/* buttons */
+.myo-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    text-decoration: none;
+    font-weight: 950;
+    transition: .14s ease
+}
+
+.myo-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.03)
+}
+
+.myo-btn--primary {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: #06210f;
+    box-shadow: 0 12px 24px rgba(34, 197, 94, .18)
+}
+
+.myo-btn--ghost {
+    background: rgba(255, 255, 255, .06);
+    border-color: rgba(255, 255, 255, .14);
+    color: rgb(11, 7, 7)
+}
+
+/* pagination */
+.myo-pagi {
+    margin-top: 14px;
+    display: flex;
+    justify-content: center
+}
+
+/* empty */
+.myo-empty {
+    border: 1px dashed rgba(255, 255, 255, .22);
+    background: radial-gradient(700px 220px at 20% 0%, rgba(34, 197, 94, .12), transparent 55%),
+    rgba(255, 255, 255, .03);
+    border-radius: 18px;
+    padding: 18px;
+    display: grid;
+    gap: 8px;
+    justify-items: center;
+    text-align: center;
+    color: rgb(11, 7, 7)
+}
+
+.myo-empty__icon {
+    font-size: 34px
+}
+
+.myo-empty__title {
+    font-weight: 950;
+    font-size: 18px
+}
+
+.myo-empty__sub {
+    opacity: .8;
+    max-width: 520px
+}
+
+/* ===== DETAIL PAGE ===== */
+.myd-grid {
+    display: grid;
+    grid-template-columns:1fr;
+    gap: 12px
+}
+
+@media (min-width: 900px) {
+    .myd-grid {
+        grid-template-columns:1fr 1fr
+    }
+}
+
+.myd-card {
+    border: 1px solid rgba(255, 255, 255, .14);
+    background: radial-gradient(700px 220px at 0% 0%, rgba(59, 130, 246, .10), transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .03));
+    border-radius: 18px;
+    padding: 14px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, .35)
+}
+
+.myd-card__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px
+}
+
+.myd-card__title {
+    font-weight: 950;
+    color: rgb(11, 7, 7)
+}
+
+.myd-info {
+    display: grid;
+    gap: 10px
+}
+
+.myd-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start
+}
+
+.myd-k {
+    width: 92px;
+    flex: 0 0 92px;
+    font-size: 12px;
+    color: rgb(11, 7, 7)
+}
+
+.myd-v {
+    font-weight: 900;
+    color: rgb(11, 7, 7)
+}
+
+.myd-v--strong {
+    font-size: 18px
+}
+
+/* items list */
+.myd-items {
+    display: grid;
+    gap: 10px
+}
+
+.myd-item {
+    display: grid;
+    grid-template-columns:56px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 10px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    background: rgba(255, 255, 255, .035)
+}
+
+.myd-item__img {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .14);
+    background: radial-gradient(60px 60px at 30% 25%, rgba(59, 130, 246, .30), transparent 70%),
+    rgba(255, 255, 255, .05);
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+    color: rgb(11, 7, 7)
+}
+
+.myd-item__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block
+}
+
+.myd-item__name {
+    font-weight: 950;
+    color: rgb(11, 7, 7);
+    line-height: 1.2
+}
+
+.myd-item__sub {
+    margin-top: 4px;
+    font-size: 12px;
+    color: rgb(11, 7, 7)
+}
+
+.myd-item__total {
+    font-weight: 950;
+    color: rgb(11, 7, 7);
+    white-space: nowrap
+}
+
+@media (max-width: 560px) {
+    .myo-prod {
+        grid-template-columns:48px 1fr auto
+    }
+
+    .myo-prod__img, .myd-item__img {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px
+    }
+
+    .myd-k {
+        width: 84px;
+        flex-basis: 84px
+    }
+}
+
+.myd-item__link {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.myd-item__name.myd-item__link {
+    color: #0b0707;
+}
+
+.myd-item__name.myd-item__link:hover {
+    color: #22c55e;
+    text-decoration: underline;
+}
+
+.myd-item__img.myd-item__link:hover {
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, .35);
+    transform: translateY(-1px);
+    transition: .12s ease;
+}

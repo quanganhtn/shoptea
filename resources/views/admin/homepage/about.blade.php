@@ -3,6 +3,10 @@
 @section('title','Homepage - About')
 @section('page_title','🏠 Trang chủ / About')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/homepage.css') }}">
+@endpush
+
 @section('content')
     <div class="admin-container">
         <div class="admin-card">

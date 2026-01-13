@@ -8,6 +8,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @mixin IdeHelperUser
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -25,8 +28,12 @@ class User extends Authenticatable
         'role',
         'google_id',
         'avatar',
-
+        'bio',
+        'gender',
+        'dob',
+        'address',
     ];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -46,11 +53,13 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'dob' => 'date',
     ];
 
     public function productReviews()
     {
         return $this->hasMany(\App\Models\ProductReview::class);
     }
+
 
 }

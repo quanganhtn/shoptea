@@ -56,7 +56,7 @@ class GoogleController extends Controller
                 ->with('success', 'Đăng nhập Google (admin) thành công!');
         }
 
-        return redirect()->route('home')
+        return redirect()->route('user')
             ->with('success', 'Đăng nhập Google thành công!');
     }
 }

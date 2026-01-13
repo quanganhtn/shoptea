@@ -1,0 +1,68 @@
+/* ===============================
+   PRODUCTS: NAME BLOCK (index)
+================================ */
+.p-name__title {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.p-name__sub {
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+/* ===============================
+   PRODUCTS: STOCK BADGE (index)
+================================ */
+.stock-pill {
+    display: inline-flex;
+    min-width: 44px;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    background: #fff;
+}
+
+.stock-pill.is-ok {
+    color: #166534;
+    background: #ecfdf5;
+    border-color: #bbf7d0;
+}
+
+.stock-pill.is-low {
+    color: #92400e;
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.stock-pill.is-out {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+/* ===============================
+   EDIT PRODUCT: STOCK FIELD
+================================ */
+.stock-field .admin-label {
+    display: block;
+    margin-bottom: 6px;
+}
+
+.stock-edit {
+    display: grid;
+    gap: 6px;
+}
+
+.stock-edit__input {
+    max-width: 240px;
+}
+
+.stock-edit__hint {
+    font-size: 12px;
+    line-height: 1.3;
+}

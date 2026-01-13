@@ -7,17 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @mixin IdeHelperProduct
+ */
 class Product extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'description',
-        'price',
-        'image',
-        'category_id',
+        'name', 'price', 'description', 'image', 'category_id', 'stock'
     ];
+
 
     public function reviews(): HasMany
     {

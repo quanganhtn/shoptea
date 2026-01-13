@@ -6,8 +6,43 @@
     <title>@yield('title', 'ShopTea')</title>
 
 
-    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+    {{--    <link rel="stylesheet" href="{{ asset('css/home.css') }}">--}}
+    <link rel="stylesheet" href="{{ asset('css/user/layout.css') }}">
+    @stack('styles')
+
 </head>
+
+@auth
+    <div class="chat-fab" id="chatFab">
+        <button class="chat-fab__btn" id="chatFabBtn" aria-expanded="false">
+            💬
+            <span class="chat-fab__pulse"></span>
+        </button>
+
+        {{-- CHAT BOX --}}
+        <div class="chatbox" id="chatBox">
+
+            <div class="chatbox__header">
+                <div>
+                    <div class="chatbox__title">Chat với ShopTea</div>
+                    <div class="chatbox__sub">Người bán đang online</div>
+                </div>
+                <button class="chatbox__close" id="chatClose">✕</button>
+            </div>
+
+            <div class="chatbox__body" id="chatBody"></div>
+
+            <form class="chatbox__form" id="chatForm">
+                <input class="chatbox__input" id="chatInput" placeholder="Nhập tin nhắn..." autocomplete="off">
+                <button class="chatbox__send" type="submit">➤</button>
+            </form>
+
+        </div>
+    </div>
+@else
+    <a href="{{ route('login') }}" class="chat-login-fab">💬</a>
+@endauth
+
 
 <body>
 
@@ -18,7 +53,7 @@
 
             {{-- LEFT: LOGO --}}
             <div class="navbar-left">
-                <a class="navbar-brand" href="{{ route('home') }}">
+                <a class="navbar-brand" href="{{ route('user') }}">
                     <img src="{{ asset('images/logo.png') }}" class="logo-round" alt="ShopTea">
                 </a>
             </div>
@@ -34,16 +69,16 @@
             <div class="navbar-collapse" id="shopteaNav">
 
                 {{-- MENU --}}
-                <ul class="navbar-menu">
+                <ul class="navbar-menu" id="mainNav">
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ route('home') }}#home">
+                        <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ route('user') }}#home">
                             Trang chủ
                         </a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#about">Giới thiệu</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#products">Sản phẩm</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#news">Tin tức</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#contact">Liên hệ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('user') }}#about">Giới thiệu</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('user') }}#products">Sản phẩm</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('user') }}#news">Tin tức</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('user') }}#contact">Liên hệ</a></li>
                 </ul>
 
                 {{-- SEARCH --}}
@@ -232,6 +267,97 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeMenu();
+        });
+    })();
+</script>
+
+<script>
+    (function () {
+        const wrap = document.getElementById('chatFab');
+        if (!wrap) return;
+
+        const btn = document.getElementById('chatFabBtn');
+        const closeBtn = document.getElementById('chatClose');
+        const body = document.getElementById('chatBody');
+        const form = document.getElementById('chatForm');
+        const input = document.getElementById('chatInput');
+
+        let conversationId = null;
+        let lastId = 0;
+        let timer = null;
+
+        function addMsg(sender, text) {
+            const div = document.createElement('div');
+            div.className = 'chat-msg ' + (sender === 'user' ? 'chat-msg--user' : 'chat-msg--admin');
+            div.textContent = text;
+            body.appendChild(div);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        async function init() {
+            if (conversationId) return;
+            const res = await fetch("{{ route('chat.init') }}");
+            const data = await res.json();
+            conversationId = data.conversation_id;
+        }
+
+        async function fetchNew() {
+            if (!conversationId) return;
+            const url = `{{ route('chat.fetch') }}?conversation_id=${conversationId}&after_id=${lastId}`;
+            const res = await fetch(url);
+            const msgs = await res.json();
+            msgs.forEach(m => {
+                addMsg(m.sender, m.body);
+                lastId = Math.max(lastId, m.id);
+            });
+        }
+
+        function openChat() {
+            wrap.classList.add('is-open');
+            btn.setAttribute('aria-expanded', 'true');
+            init().then(fetchNew);
+            if (!timer) timer = setInterval(fetchNew, 3000);
+        }
+
+        function closeChat() {
+            wrap.classList.remove('is-open');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+
+        btn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            wrap.classList.contains('is-open') ? closeChat() : openChat();
+        });
+
+        closeBtn?.addEventListener('click', closeChat);
+
+        form?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = input.value.trim();
+            if (!text) return;
+
+            await init();
+            input.value = '';
+
+            const resp = await fetch("{{ route('chat.send') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({conversation_id: conversationId, body: text})
+            });
+
+            if (!resp.ok) {
+                alert('Bạn gửi nhanh quá, thử lại sau nhé!');
+                return;
+            }
+
+            await fetchNew();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.chat-fab')) closeChat();
         });
     })();
 </script>

@@ -3,6 +3,10 @@
 @section('title','Users')
 @section('page_title','👤 Người dùng')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/users.css') }}">
+@endpush
+
 @section('content')
     <div class="admin-container">
 

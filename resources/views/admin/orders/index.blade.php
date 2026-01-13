@@ -3,6 +3,10 @@
 @section('title','Đơn hàng')
 @section('page_title','📦 Đơn hàng')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/orders.css') }}">
+@endpush
+
 @section('content')
     <div class="admin-container">
 

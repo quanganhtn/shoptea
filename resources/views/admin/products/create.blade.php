@@ -3,6 +3,10 @@
 @section('title','Thêm sản phẩm')
 @section('page_title','➕ Thêm sản phẩm')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/products.css') }}">
+@endpush
+
 @section('content')
     <div class="admin-container">
         <div class="admin-card">

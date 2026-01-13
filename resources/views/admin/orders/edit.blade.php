@@ -3,6 +3,10 @@
 @section('title','Cập nhật đơn hàng')
 @section('page_title','✏️ Cập nhật đơn hàng')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/orders.css') }}">
+@endpush
+
 @section('content')
     <div class="admin-container">
 
@@ -17,7 +21,7 @@
         <div class="admin-card" style="margin-bottom:16px">
             <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
                 <div>
-                    <h2 class="admin-h2" style="margin:0">Đơn #{{ $order->id }}</h2>
+                    <h2 class="admin-h2" style="margin:0">Đơn {{ $order->id }}</h2>
                     <div style="color:var(--muted);margin-top:6px">
                         Ngày tạo: {{ $order->created_at->format('d/m/Y H:i') }}
                     </div>

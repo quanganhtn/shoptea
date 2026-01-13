@@ -1,0 +1,39 @@
+/* Homepage module: hero/about/news/contact */
+
+/* PREVIEW */
+.admin-preview {
+    margin-top: 10px;
+    display: grid;
+    gap: 8px;
+}
+
+.admin-preview__img {
+    max-height: 120px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .10);
+}
+
+.admin-preview__img--large {
+    max-width: 360px;
+    max-height: none;
+}
+
+.admin-preview__img--cover {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+/* NEWS SUBCARD */
+.admin-subcard {
+    border: 1px solid rgba(255, 255, 255, .10);
+    background: rgba(255, 255, 255, .02);
+    border-radius: 18px;
+    padding: 14px;
+    height: 100%;
+}
+
+.admin-subcard__title {
+    font-weight: 900;
+    margin-bottom: 10px;
+}

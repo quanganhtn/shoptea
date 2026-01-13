@@ -3,6 +3,10 @@
 @section('title','Chi tiết người dùng')
 @section('page_title','👤 Chi tiết người dùng')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/users.css') }}">
+@endpush
+
 @section('content')
     <div class="admin-container">
 
@@ -17,7 +21,7 @@
         <div class="admin-card" style="margin-bottom:16px">
             <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
                 <div>
-                    <h2 class="admin-h2" style="margin:0">User #{{ $user->id }}</h2>
+                    <h2 class="admin-h2" style="margin:0">User {{ $user->id }}</h2>
                     <div class="admin-muted" style="margin-top:6px">
                         Tạo ngày: {{ $user->created_at->format('d/m/Y H:i') }}
                     </div>

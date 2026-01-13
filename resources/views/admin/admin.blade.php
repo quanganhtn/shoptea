@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title','Admin - ShopTea')</title>
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
-</head>
 
+    {{--    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">--}}
+
+    <link rel="stylesheet" href="{{ asset('css/admin/admin-core.css') }}">
+    @stack('styles')
+
+</head>
 <body class="admin-body">
 <div class="admin-layout">
 
@@ -25,7 +29,7 @@
                href="{{ route('admin.dashboard') }}">
                 <span class="admin-link__left">
                     <span class="admin-icon">📊</span>
-                    <span class="admin-text">Dashboard</span>
+                    <span class="admin-text">Tổng quan</span>
                 </span>
             </a>
 
@@ -45,16 +49,16 @@
 
                 <div id="homepage-menu" class="admin-submenu {{ $homeActive ? 'show' : '' }}">
                     <a class="admin-sublink {{ request()->routeIs('admin.homepage.hero') ? 'active' : '' }}"
-                       href="{{ route('admin.homepage.hero') }}">🖼 Banner</a>
+                       href="{{ route('admin.homepage.hero') }}">Banner Trang chủ</a>
 
                     <a class="admin-sublink {{ request()->routeIs('admin.homepage.about') ? 'active' : '' }}"
-                       href="{{ route('admin.homepage.about') }}">ℹ️ About</a>
+                       href="{{ route('admin.homepage.about') }}">Giới thiệu</a>
 
                     <a class="admin-sublink {{ request()->routeIs('admin.homepage.news') ? 'active' : '' }}"
-                       href="{{ route('admin.homepage.news') }}">📰 News</a>
+                       href="{{ route('admin.homepage.news') }}">Tin tức</a>
 
                     <a class="admin-sublink {{ request()->routeIs('admin.homepage.contact') ? 'active' : '' }}"
-                       href="{{ route('admin.homepage.contact') }}">📞 Contact</a>
+                       href="{{ route('admin.homepage.contact') }}">Liên hệ</a>
                 </div>
             </div>
 
@@ -89,10 +93,18 @@
                     <span class="admin-text">Users</span>
                 </span>
             </a>
+            <a class="admin-link {{ request()->routeIs('admin.inbox.*') ? 'active' : '' }}"
+               href="{{ route('admin.inbox.index') }}">
+                <span class="admin-link__left">
+                    <span class="admin-icon">💬</span>
+                    <span class="admin-text">Inbox</span>
+                </span>
+                <span id="inbox-badge" class="badge bg-danger" style="display:none">0</span>
+            </a>
         </nav>
 
         <div class="admin-sidebar__bottom">
-            <a class="admin-btn admin-btn--light admin-btn--block" href="{{ route('home') }}">← Về trang user</a>
+            <a class="admin-btn admin-btn--light admin-btn--block" href="{{ route('user') }}">← Về trang user</a>
 
             <form action="{{ route('logout') }}" method="POST" class="admin-form--no-gap">
                 @csrf
@@ -129,6 +141,41 @@
         btn.classList.toggle('is-open', isOpen);
     }
 </script>
+
+<script>
+    async function checkInbox() {
+        const url = "{{ route('admin.inbox.unreadCount') }}";
+
+        try {
+            const res = await fetch(url, {headers: {'Accept': 'application/json'}});
+
+            // ✅ debug nhanh
+            if (!res.ok) {
+                console.log('UnreadCount HTTP:', res.status, 'URL:', url);
+                const text = await res.text();
+                console.log('Response preview:', text.slice(0, 200));
+                return;
+            }
+
+            const data = await res.json();
+            const badge = document.getElementById('inbox-badge');
+            if (!badge) return;
+
+            if (data.count > 0) {
+                badge.textContent = data.count;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        } catch (e) {
+            console.error('checkInbox error:', e);
+        }
+    }
+
+    checkInbox();
+    setInterval(checkInbox, 10000);
+</script>
+
 
 @stack('scripts')
 </body>

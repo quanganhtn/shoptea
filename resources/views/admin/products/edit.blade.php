@@ -3,6 +3,10 @@
 @section('title','Sửa sản phẩm')
 @section('page_title','✏️ Sửa sản phẩm')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/products.css') }}">
+@endpush
+
 @section('content')
     <div class="admin-container">
         <div class="admin-card">
@@ -34,6 +38,24 @@
                            value="{{ old('price', $product->price) }}" required>
                 </div>
 
+                {{-- ✅ TỒN KHO (sửa ở trang edit) --}}
+                <div class="admin-field stock-field">
+                    <label class="admin-label">Tồn kho</label>
+
+                    <div class="stock-edit">
+                        <input type="number"
+                               name="stock_add"
+                               class="admin-input stock-edit__input"
+                               min="0" step="1"
+                               value="{{ old('stock', $product->stock ?? 0) }}"
+                               required>
+
+                        <div class="stock-edit__hint admin-muted">
+                            Nhập số lượng sản phẩm hiện còn trong kho.
+                        </div>
+                    </div>
+                </div>
+
                 <div class="admin-field">
                     <label class="admin-label">Mô tả</label>
                     <textarea name="description" class="admin-textarea"
@@ -48,10 +70,8 @@
 
                 <div class="admin-field">
                     <label class="admin-label">Loại trà</label>
-
                     <select name="category_id" class="admin-select" required>
                         <option value="">-- Chọn danh mục --</option>
-
                         @foreach ($categories as $cat)
                             <option value="{{ $cat->id }}"
                                 @selected(old('category_id', $product->category_id) == $cat->id)>
@@ -60,7 +80,6 @@
                         @endforeach
                     </select>
                 </div>
-
 
                 <div class="admin-form__actions">
                     <button type="submit" class="admin-btn admin-btn--success">Cập nhật</button>

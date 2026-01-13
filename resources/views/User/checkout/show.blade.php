@@ -1,5 +1,9 @@
 @extends('User.layouts.home')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/user/product-show.css') }}">
+@endpush
+
 @section('content')
     <div class="container py-3 page-offset">
         <div class="product-show">
@@ -33,7 +37,7 @@
                 </div>
 
                 <div class="product-back">
-                    <a href="{{ route('home') }}#products" class="btn btn-secondary btn-sm">← Quay lại</a>
+                    <a href="{{ route('user') }}#products" class="btn btn-secondary btn-sm">← Quay lại</a>
                 </div>
             </div>
 

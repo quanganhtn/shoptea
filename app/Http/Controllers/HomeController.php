@@ -21,7 +21,7 @@ class HomeController extends Controller
             $homepage = json_decode(File::get($path), true);
         }
 
-        // 2) danh mục từ DB (để home tự đổi theo admin)
+        // 2) danh mục từ DB (để user tự đổi theo admin)
         $categories = Category::orderBy('name')->get();
 
         // 3) query sản phẩm

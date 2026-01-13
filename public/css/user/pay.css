@@ -1,0 +1,245 @@
+/* =========================================================
+   CHECKOUT.CSS — chỉ trang checkout
+========================================================= */
+
+.checkout-onepage {
+    max-width: 860px;
+}
+
+.pay-card {
+    background: #fff;
+    border-radius: 18px;
+    border: 1px solid #eef0f3;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .06);
+    overflow: hidden;
+}
+
+.pay-card__header {
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #fafafa;
+    border-bottom: 1px solid #eef0f3;
+    font-weight: 700;
+}
+
+.pay-card__body {
+    padding: 16px;
+}
+
+.pay-collapse > summary {
+    list-style: none;
+    cursor: pointer;
+}
+
+.pay-collapse > summary::-webkit-details-marker {
+    display: none;
+}
+
+.pay-collapse__summary {
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #fff7d6;
+    border-bottom: 1px solid #ffe7a3;
+}
+
+.summary-title {
+    font-weight: 800;
+}
+
+.summary-sub {
+    font-size: 13px;
+    opacity: .75;
+    margin-top: 2px;
+}
+
+.chev {
+    font-size: 18px;
+    transition: transform .2s ease;
+}
+
+details[open] .chev {
+    transform: rotate(180deg);
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+@media (max-width: 768px) {
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.label {
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.input--big {
+    padding: 14px 14px;
+    font-size: 16px;
+}
+
+.textarea--big {
+    padding: 14px 14px;
+    font-size: 16px;
+}
+
+.pay-method__title {
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.pay-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 14px;
+    border-radius: 16px;
+    background: #fff2b8;
+    border: 1px solid #ffe07a;
+    font-weight: 800;
+}
+
+.pay-pill__badge {
+    background: #111827;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+}
+
+.pay-pill__text {
+    font-size: 15px;
+}
+
+.qty-badge {
+    background: #111827;
+    color: #fff;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.qty-badge__num {
+    font-size: 18px;
+    font-weight: 900;
+    margin-left: 6px;
+}
+
+.order-mini {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.order-mini__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed #eef0f3;
+}
+
+.order-mini__row:last-child {
+    border-bottom: none;
+}
+
+.order-mini__img {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 1px solid #eef0f3;
+}
+
+.order-mini__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.order-mini__name {
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.order-mini__sub {
+    font-size: 13px;
+    opacity: .75;
+    margin-top: 2px;
+}
+
+.order-mini__price {
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.pay-total {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #eef0f3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.pay-total__label {
+    font-weight: 800;
+    opacity: .8;
+}
+
+.pay-total__value {
+    font-weight: 950;
+    font-size: 22px;
+    color: #d11a2a;
+}
+
+.pay-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn-back, .btn-order {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-weight: 900;
+    text-decoration: none;
+    border: 1px solid transparent;
+}
+
+.btn-back {
+    background: #111827;
+    color: #fff;
+    border-color: #111827;
+}
+
+.btn-order {
+    background: #16a34a;
+    color: #fff;
+    border-color: #16a34a;
+}
+
+.btn-order:hover, .btn-back:hover {
+    filter: brightness(.95);
+}

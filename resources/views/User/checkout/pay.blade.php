@@ -2,6 +2,10 @@
 
 @section('title', 'Thanh toán - ShopTea')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/user/pay.css') }}">
+@endpush
+
 @section('content')
     <div class="container py-4 page-offset checkout-onepage">
 
@@ -52,8 +56,13 @@
                     <div class="form-group mt-2">
                         <label class="label">Địa chỉ nhận hàng</label>
                         <textarea name="address" class="textarea textarea--big" rows="3"
-                                  required>{{ old('address') }}</textarea>
+                                  required>{{ old('address', auth()->user()->address ?? '') }}</textarea>
                     </div>
+                    
+                    <label style="display:flex;gap:8px;align-items:center;margin-top:10px">
+                        <input type="checkbox" name="save_address" value="1" checked>
+                        <span>Lưu địa chỉ này cho lần sau</span>
+                    </label>
 
                     <div class="form-group mt-2">
                         <label class="label">Ghi chú (tuỳ chọn)</label>

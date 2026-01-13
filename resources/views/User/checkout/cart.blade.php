@@ -2,6 +2,11 @@
 
 @section('title', 'Giỏ hàng - ShopTea')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/user/cart.css') }}">
+@endpush
+
+
 @section('content')
     <div class="container cart-page">
         <h3 class="mb-3">Giỏ hàng của bạn</h3>
@@ -116,7 +121,7 @@
 
         @else
             <p>Giỏ hàng trống!</p>
-            <a href="{{ route('home') }}" class="btn btn-secondary">Quay lại mua hàng</a>
+            <a href="{{ route('user') }}" class="btn btn-secondary">Quay lại mua hàng</a>
         @endif
     </div>
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminInboxController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\HomepageController;
@@ -35,7 +36,6 @@ Route::prefix('admin')
 
         /* ================= PRODUCTS ================= */
         Route::prefix('products')->name('products.')->group(function () {
-
             Route::get('/', [ProductController::class, 'index'])->name('index');
             Route::get('create', [ProductController::class, 'create'])->name('create');
             Route::post('/', [ProductController::class, 'store'])->name('store');
@@ -44,10 +44,12 @@ Route::prefix('admin')
             Route::delete('{id}', [ProductController::class, 'destroy'])->name('destroy');
         });
 
+
         /* ================= CATEGORIES ================= */
         Route::prefix('categories')->name('categories.')->group(function () {
             Route::get('/', [CategoryController::class, 'index'])->name('index');
             Route::post('/', [CategoryController::class, 'store'])->name('store');
+            Route::put('{id}', [CategoryController::class, 'update'])->name('update');
             Route::delete('{id}', [CategoryController::class, 'destroy'])->name('destroy');
         });
 
@@ -69,5 +71,21 @@ Route::prefix('admin')
             Route::put('{id}', [UserController::class, 'update'])->name('update');
             Route::delete('{id}', [UserController::class, 'destroy'])->name('destroy');
         });
+        /* ================= INBOX ================= */
+        Route::prefix('inbox')->name('inbox.')->group(function () {
+
+            
+            Route::get('/unread-count', [AdminInboxController::class, 'unreadCount'])
+                ->name('unreadCount');
+
+            Route::get('/', [AdminInboxController::class, 'index'])->name('index');
+
+            Route::get('/{conversation}/messages', [AdminInboxController::class, 'messages'])->name('messages');
+            Route::post('/{conversation}/send', [AdminInboxController::class, 'send'])->name('send');
+
+
+            Route::get('/{conversation}', [AdminInboxController::class, 'show'])->name('show');
+        });
+
     });
 

@@ -1,0 +1,51 @@
+/* ===============================
+   CATEGORY PAGE
+================================ */
+
+.cat-add-card {
+    margin-bottom: 14px;
+
+}
+
+/* table columns */
+.cat-col-id {
+    width: 90px;
+
+}
+
+.cat-col-actions {
+    width: 180px;
+
+}
+
+/* ===============================
+   INLINE EDIT
+================================ */
+
+.cat-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.cat-edit-form {
+    display: none;
+    gap: 6px;
+    align-items: center;
+}
+
+.cat-edit-input {
+    max-width: 220px;
+}
+
+.admin-td--left {
+    vertical-align: middle;
+}
+
+.cat-actions .admin-btn--warning {
+    color: rgba(255, 255, 255, 0.93);
+    font-weight: 600;
+    background: #2f80ff;
+}

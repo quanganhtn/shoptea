@@ -1,0 +1,270 @@
+/* ===== PROFILE (STYLE LIKE MY-ORDERS) ===== */
+
+/* HEAD */
+.pro-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px
+}
+
+.pro-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 950;
+    letter-spacing: .2px;
+    color: #0b0707
+}
+
+.pro-sub {
+    margin-top: 4px;
+    color: #0b0707;
+    opacity: .85
+}
+
+/* ALERT */
+.pro-alert {
+    padding: 12px 14px;
+    border-radius: 16px;
+    margin: 10px 0 14px;
+    border: 1px solid rgba(0, 0, 0, .08);
+    background: rgba(0, 0, 0, .03);
+    color: #0b0707
+}
+
+.pro-alert--success {
+    border-color: rgba(34, 197, 94, .35);
+    background: rgba(34, 197, 94, .10)
+}
+
+.pro-alert--danger {
+    border-color: rgba(239, 68, 68, .35);
+    background: rgba(239, 68, 68, .10)
+}
+
+/* GRID */
+.pro-grid {
+    display: grid;
+    grid-template-columns:360px 1fr;
+    gap: 12px
+}
+
+@media (max-width: 992px) {
+    .pro-grid {
+        grid-template-columns:1fr
+    }
+}
+
+/* CARD */
+.pro-card {
+    border: 1px solid rgba(0, 0, 0, .08);
+    background: rgba(255, 255, 255, .85);
+    border-radius: 18px;
+    padding: 14px;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, .10)
+}
+
+.pro-card__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 12px
+}
+
+.pro-user {
+    display: flex;
+    gap: 12px;
+    align-items: center
+}
+
+.pro-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    font-weight: 950;
+    font-size: 20px;
+    color: #0b0707;
+    border: 1px solid rgba(0, 0, 0, .08);
+    background: linear-gradient(135deg, rgba(34, 197, 94, .22), rgba(59, 130, 246, .12))
+}
+
+.pro-name {
+    font-weight: 950;
+    color: #0b0707;
+    line-height: 1.2
+}
+
+.pro-email {
+    margin-top: 4px;
+    color: #0b0707;
+    opacity: .75;
+    word-break: break-word
+}
+
+/* badge chip */
+.pro-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, .08);
+    font-weight: 950;
+    font-size: 12px;
+    background: rgba(0, 0, 0, .03);
+    color: #0b0707
+}
+
+/* summary kv */
+.pro-kv {
+    display: grid;
+    grid-template-columns:1fr 1fr;
+    gap: 10px
+}
+
+@media (max-width: 520px) {
+    .pro-kv {
+        grid-template-columns:1fr
+    }
+}
+
+.pro-kv__item {
+    padding: 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, .07);
+    background: rgba(0, 0, 0, .02)
+}
+
+.pro-kv__item--full {
+    grid-column: 1 / -1
+}
+
+.pro-k {
+    font-size: 12px;
+    color: #0b0707;
+    opacity: .75
+}
+
+.pro-v {
+    margin-top: 6px;
+    font-weight: 950;
+    color: #0b0707;
+    line-height: 1.35
+}
+
+/* form */
+.pro-card__head {
+    margin-bottom: 10px
+}
+
+.pro-card__title {
+    font-weight: 950;
+    color: #0b0707
+}
+
+.pro-card__sub {
+    margin-top: 4px;
+    color: #0b0707;
+    opacity: .75;
+    font-size: 13px
+}
+
+.pro-form {
+    margin-top: 10px
+}
+
+.pro-row {
+    display: grid;
+    grid-template-columns:1fr 1fr;
+    gap: 12px
+}
+
+@media (max-width: 520px) {
+    .pro-row {
+        grid-template-columns:1fr
+    }
+}
+
+.pro-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 12px
+}
+
+.pro-label {
+    font-size: 13px;
+    color: #0b0707;
+    opacity: .85
+}
+
+.pro-input {
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 0, 0, .10);
+    background: #fff;
+    color: #0b0707;
+    outline: none;
+    transition: .14s ease;
+}
+
+.pro-input:focus {
+    border-color: rgba(34, 197, 94, .45);
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, .15)
+}
+
+.pro-textarea {
+    min-height: 110px;
+    resize: vertical
+}
+
+.pro-hint {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #0b0707;
+    opacity: .7
+}
+
+/* buttons like my-orders */
+.pro-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 6px
+}
+
+.pro-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    text-decoration: none;
+    font-weight: 950;
+    transition: .14s ease;
+    cursor: pointer
+}
+
+.pro-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.03)
+}
+
+.pro-btn--primary {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: #06210f;
+    box-shadow: 0 12px 24px rgba(34, 197, 94, .18)
+}
+
+.pro-btn--ghost {
+    background: rgba(0, 0, 0, .03);
+    border-color: rgba(0, 0, 0, .08);
+    color: #0b0707
+}

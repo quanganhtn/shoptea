@@ -2,8 +2,9 @@
 @section('title','Đơn hàng của tôi')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/my-orders.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/user/my-orders.css') }}">
 @endpush
+
 
 @php
     $status = request('status');
@@ -113,7 +114,7 @@
                 <div class="myo-empty__icon">🧾</div>
                 <div class="myo-empty__title">Chưa có đơn hàng</div>
                 <div class="myo-empty__sub">Hãy chọn một loại trà bạn thích và đặt ngay nhé.</div>
-                <a href="{{ route('home') }}#products" class="myo-btn myo-btn--primary">Khám phá sản phẩm</a>
+                <a href="{{ route('user') }}#products" class="myo-btn myo-btn--primary">Khám phá sản phẩm</a>
             </div>
         @endif
 

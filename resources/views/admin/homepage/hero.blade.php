@@ -3,6 +3,10 @@
 @section('title','Homepage - Banner')
 @section('page_title','🏠 Trang chủ / Banner')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/homepage.css') }}">
+@endpush
+
 @section('content')
     <div class="admin-container">
         <div class="admin-card">
@@ -47,7 +51,7 @@
 
                 <div class="admin-form__actions">
                     <button class="admin-btn admin-btn--primary">💾 Lưu Banner</button>
-                  
+
                 </div>
             </form>
         </div>

@@ -1,5 +1,12 @@
 @extends('admin.admin')
 
+@section('title','Sản phẩm')
+@section('page_title','🧋 Sản phẩm')
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/admin/products.css') }}">
+@endpush
+
 @php
     if (!function_exists('sort_link')) {
         function sort_link($column) {
@@ -15,11 +22,9 @@
     }
 @endphp
 
-@section('title','Sản phẩm')
-@section('page_title','🧋 Sản phẩm')
-
 @section('content')
     <div class="admin-container">
+
         <div class="admin-pagehead">
             <h2 class="admin-h2">Danh sách sản phẩm</h2>
 
@@ -39,19 +44,15 @@
             </div>
 
             <div class="admin-field">
-                <div class="admin-field">
-                    <select name="category_id" class="admin-select">
-                        <option value="">-- Tất cả danh mục --</option>
-
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}"
-                                @selected((string)request('category_id') === (string)$cat->id)>
-                                {{ $cat->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
+                <select name="category_id" class="admin-select">
+                    <option value="">-- Tất cả danh mục --</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->id }}"
+                            @selected((string)request('category_id') === (string)$cat->id)>
+                            {{ $cat->name }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="admin-field">
@@ -77,9 +78,12 @@
                         <th><a class="admin-sort" href="{{ sort_link('id') }}">ID</a></th>
                         <th><a class="admin-sort" href="{{ sort_link('name') }}">Tên</a></th>
                         <th><a class="admin-sort" href="{{ sort_link('price') }}">Giá</a></th>
-                        <th>Mô tả</th>
                         <th>Ảnh</th>
                         <th>Danh mục</th>
+
+                        {{-- ✅ Tồn kho --}}
+                        <th>Tồn kho</th>
+
                         <th>Hành động</th>
                     </tr>
                     </thead>
@@ -88,9 +92,16 @@
                     @forelse ($products as $product)
                         <tr>
                             <td>{{ $product->id }}</td>
-                            <td class="admin-td--left">{{ $product->name }}</td>
+
+                            <td class="admin-td--left">
+                                <div class="p-name">
+                                    <div class="p-name__title">{{ $product->name }}</div>
+                                    
+                                </div>
+                            </td>
+
                             <td>{{ number_format($product->price) }} đ</td>
-                            <td class="admin-td--left">{{ \Illuminate\Support\Str::limit($product->description, 50) }}</td>
+
                             <td>
                                 @if ($product->image)
                                     <img class="admin-thumb"
@@ -100,7 +111,17 @@
                                     <span class="admin-muted">—</span>
                                 @endif
                             </td>
+
                             <td>{{ $product->category?->name ?? '—' }}</td>
+
+                            {{-- ✅ tồn kho (badge) --}}
+                            <td>
+                                @php $stock = (int)($product->stock ?? 0); @endphp
+                                <span
+                                    class="stock-pill {{ $stock == 0 ? 'is-out' : ($stock <= 5 ? 'is-low' : 'is-ok') }}">
+                                {{ $stock }}
+                            </span>
+                            </td>
 
                             <td>
                                 <div class="admin-actions">
@@ -112,7 +133,8 @@
                                           onsubmit="return confirm('Bạn có chắc muốn xóa?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="admin-btn admin-btn--danger admin-btn--sm">Xóa
+                                        <button type="submit" class="admin-btn admin-btn--danger admin-btn--sm">
+                                            Xóa
                                         </button>
                                     </form>
                                 </div>
@@ -131,5 +153,6 @@
                 {{ $products->links() }}
             </div>
         </div>
+
     </div>
 @endsection

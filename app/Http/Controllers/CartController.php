@@ -67,6 +67,11 @@ class CartController extends Controller
 
         $product = Product::findOrFail($product_id);
 
+        // nếu hết hàng
+        if ((int)$product->stock <= 0) {
+            return back()->with('error', 'Sản phẩm đã hết hàng');
+        }
+
         // ✅ Logged in -> lưu DB
         if (Auth::check()) {
             $userId = Auth::id();
@@ -76,43 +81,59 @@ class CartController extends Controller
                 'product_id' => $product_id
             ]);
 
-            $cartItem->quantity = (int)($cartItem->quantity ?? 0) + $quantity;
+            $currentQty = (int)($cartItem->quantity ?? 0);
+            $newQty = min($currentQty + $quantity, (int)$product->stock);
+
+            $cartItem->quantity = $newQty;
             $cartItem->save();
 
             $this->syncCartCountDb();
+
+            // nếu bị cap
+            if ($newQty < $currentQty + $quantity) {
+                return $request->has('buy_now')
+                    ? redirect()->route('cart.index')->with('warning', 'Số lượng đã được giới hạn theo tồn kho')
+                    : back()->with('warning', 'Số lượng đã được giới hạn theo tồn kho');
+            }
 
             return $request->has('buy_now')
                 ? redirect()->route('cart.index')
                 : back()->with('success', 'Đã thêm vào giỏ hàng');
         }
 
-        // ❌ Guest -> lưu session (giữ như cũ)
+        // ❌ Guest -> lưu session
         $cart = session()->get('cart', []);
-        if (isset($cart[$product_id])) {
-            $cart[$product_id]['quantity'] += $quantity;
-        } else {
-            $cart[$product_id] = [
-                'name' => $product->name,
-                'price' => $product->price,
-                'image' => $product->image,
-                'quantity' => $quantity,
-            ];
-        }
+        $currentQty = isset($cart[$product_id]) ? (int)$cart[$product_id]['quantity'] : 0;
+        $newQty = min($currentQty + $quantity, (int)$product->stock);
+
+        $cart[$product_id] = [
+            'name' => $product->name,
+            'price' => $product->price,
+            'image' => $product->image,
+            'quantity' => $newQty,
+        ];
 
         session()->put('cart', $cart);
         $this->syncCartCountSession($cart);
+
+        if ($newQty < $currentQty + $quantity) {
+            return $request->has('buy_now')
+                ? redirect()->route('cart.index')->with('warning', 'Số lượng đã được giới hạn theo tồn kho')
+                : back()->with('warning', 'Số lượng đã được giới hạn theo tồn kho');
+        }
 
         return $request->has('buy_now')
             ? redirect()->route('cart.index')
             : back()->with('success', 'Đã thêm vào giỏ hàng');
     }
 
-    // ===== Helpers =====
-
     public function update(Request $request)
     {
         $productId = (int)$request->product_id;
-        $action = $request->action;
+        $action = (string)$request->action;
+
+        $product = Product::findOrFail($productId);
+        $stock = (int)$product->stock;
 
         // ✅ Logged in -> update DB
         if (Auth::check()) {
@@ -123,31 +144,54 @@ class CartController extends Controller
             if (!$row) return back();
 
             if ($action === 'increase') {
-                $row->quantity += 1;
-            } elseif ($action === 'decrease') {
-                $row->quantity = max(1, $row->quantity - 1);
-            }
-            $row->save();
+                if ($stock <= 0) {
+                    return back()->with('error', 'Sản phẩm đã hết hàng');
+                }
 
+                $before = (int)$row->quantity;
+                $after = min($before + 1, $stock);
+
+                // Nếu đã chạm trần thì không tăng nữa và báo warning
+                if ($after === $before) {
+                    return back()->with('warning', 'Đã đạt số lượng tối đa theo tồn kho');
+                }
+
+                $row->quantity = $after;
+            } elseif ($action === 'decrease') {
+                $row->quantity = max(1, ((int)$row->quantity) - 1);
+            }
+
+            $row->save();
             $this->syncCartCountDb();
             return back();
         }
 
-        // ❌ Guest -> update session (giữ như cũ)
+        // ❌ Guest -> update session
         $cart = session()->get('cart', []);
         if (!isset($cart[$productId])) return back();
 
         if ($action === 'increase') {
-            $cart[$productId]['quantity']++;
+            if ($stock <= 0) {
+                return back()->with('error', 'Sản phẩm đã hết hàng');
+            }
+
+            $before = (int)$cart[$productId]['quantity'];
+            $after = min($before + 1, $stock);
+
+            if ($after === $before) {
+                return back()->with('warning', 'Đã đạt số lượng tối đa theo tồn kho');
+            }
+
+            $cart[$productId]['quantity'] = $after;
         } elseif ($action === 'decrease') {
-            $cart[$productId]['quantity'] = max(1, $cart[$productId]['quantity'] - 1);
+            $cart[$productId]['quantity'] = max(1, ((int)$cart[$productId]['quantity']) - 1);
         }
 
         session(['cart' => $cart]);
         $this->syncCartCountSession($cart);
-
         return back();
     }
+
 
     public function deleteSelected(Request $request)
     {
