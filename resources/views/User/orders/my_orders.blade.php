@@ -106,9 +106,10 @@
                 @endforeach
             </div>
 
-            <div class="myo-pagi">
+            <div class="myo-pagi myo-pagi--beauty">
                 {{ $orders->withQueryString()->links() }}
             </div>
+
         @else
             <div class="myo-empty">
                 <div class="myo-empty__icon">🧾</div>

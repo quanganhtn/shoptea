@@ -32,7 +32,6 @@ class AdminInboxController extends Controller
             'admin_last_read_at' => now(),
             'admin_unread' => 0,
         ]);
-
         $conversations = Conversation::with('user')
             ->orderByDesc('last_message_at')//mới nhất lên đầu.
             ->paginate(20);// chia mỗi trang 20 dòng

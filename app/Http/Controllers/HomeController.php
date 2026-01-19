@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -48,10 +49,37 @@ class HomeController extends Controller
     {
         $product = Product::with([
             'category',
-            'reviews.user' // lấy luôn người viết review
+            'reviews.user'
         ])->findOrFail($id);
 
-        return view('User.checkout.show', compact('product'));
+        // 1) Đã bán (đếm từ order_items của đơn completed)
+        $soldCount = OrderItem::where('product_id', $product->id)
+            ->whereHas('order', function ($q) {
+                $q->where('status', 'completed');
+            })
+            ->sum('quantity');
+
+        // 2) Đề xuất sản phẩm (ưu tiên cùng danh mục)
+        $suggestProducts = Product::with('category')
+            ->where('id', '!=', $product->id)
+            ->where('category_id', $product->category_id)
+            ->latest()
+            ->take(8)
+            ->get();
+
+        // nếu ít hơn 8 -> bù thêm sản phẩm mới nhất
+        if ($suggestProducts->count() < 8) {
+            $more = Product::with('category')
+                ->where('id', '!=', $product->id)
+                ->whereNotIn('id', $suggestProducts->pluck('id'))
+                ->latest()
+                ->take(8 - $suggestProducts->count())
+                ->get();
+
+            $suggestProducts = $suggestProducts->concat($more);
+        }
+
+        return view('User.checkout.show', compact('product', 'soldCount', 'suggestProducts'));
     }
 
 

@@ -11,6 +11,8 @@ use App\Http\Controllers\MyOrderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
+use TCG\Voyager\Facades\Voyager;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -100,3 +102,11 @@ Route::middleware(['auth'])->prefix('chat')->name('chat.')->group(function () {
     Route::get('/messages', [ChatController::class, 'fetch'])->name('fetch');
     Route::post('/send', [ChatController::class, 'send'])->middleware('throttle:10,1')->name('send');
 });
+
+
+Route::group(['prefix' => 'voyager'], function () {
+    Voyager::routes();
+});
+
+
+require __DIR__ . '/admin.php';

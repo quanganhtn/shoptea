@@ -151,6 +151,24 @@
 </header>
 
 <main class="page-with-header">
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if(session('warning'))
+        <div class="alert alert-warning">
+            {{ session('warning') }}
+        </div>
+    @endif
+
     @yield('content')
 </main>
 
@@ -158,7 +176,7 @@
     <div class="container text-center">
         <div class="footer__brand">🍃 ShopTea</div>
         <p class="mb-1">Hành trình của hương trà và sự tinh tế</p>
-        <p class="mb-0 footer__copy">© 2024 ShopTea. All rights reserved.</p>
+        <p class="mb-0 footer__copy">© 2026 ShopTea. All rights reserved.</p>
     </div>
 </footer>
 

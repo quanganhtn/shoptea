@@ -65,6 +65,7 @@ class CartController extends Controller
         $product_id = (int)$request->product_id;
         $quantity = max(1, (int)($request->quantity ?? 1));
 
+
         $product = Product::findOrFail($product_id);
 
         // nếu hết hàng

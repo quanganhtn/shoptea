@@ -10,13 +10,16 @@ class IsAdmin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Nếu chưa đăng nhập → chặn
         if (!auth()->check()) {
             abort(403, 'Bạn chưa đăng nhập');
         }
 
-        // Nếu không phải admin → chặn
-        if (auth()->user()->role !== 'admin') {
+        $user = auth()->user();
+
+        // Voyager dùng role_id + relation role()
+        $roleName = optional($user->role)->name; // admin/user/...
+
+        if ($roleName !== 'admin') {
             abort(403, 'Bạn không có quyền truy cập Admin');
         }
 

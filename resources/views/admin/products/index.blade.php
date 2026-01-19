@@ -96,7 +96,7 @@
                             <td class="admin-td--left">
                                 <div class="p-name">
                                     <div class="p-name__title">{{ $product->name }}</div>
-                                    
+
                                 </div>
                             </td>
 

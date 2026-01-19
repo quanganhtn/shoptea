@@ -16,6 +16,11 @@
                 <h2 class="product-title">{{ $product->name }}</h2>
                 <p class="product-price">{{ number_format($product->price) }} đ</p>
 
+                {{-- ✅ Chỉ hiện đã bán --}}
+                <div class="product-meta">
+                    <span class="meta-item">Đã bán: <b>{{ number_format($soldCount ?? 0) }}</b></span>
+                </div>
+
                 <div class="qty">
                     <label for="quantity" class="qty__label">Số lượng:</label>
                     <div class="qty__box">
@@ -50,10 +55,19 @@
             {{-- TAB CONTENT --}}
             <div class="pd-panels">
 
-                {{-- CHI TIẾT (DEFAULT) --}}
+                {{-- CHI TIẾT --}}
                 <div class="pd-panel is-active" id="panel-detail">
                     <h3 class="pd-title">Mô tả sản phẩm</h3>
-                    <p class="product-description">{{ $product->description }}</p>
+
+                    <div class="pd-desc" id="descBox">
+                        <p class="product-description is-clamp" id="descText">
+                            {{ $product->description }}
+                        </p>
+
+                        <button type="button" class="btn-desc-more" id="descToggle" style="display:none;">
+                            Xem thêm
+                        </button>
+                    </div>
                 </div>
 
                 {{-- ĐÁNH GIÁ --}}
@@ -67,11 +81,8 @@
                         <form action="{{ route('review.store', $product) }}" method="POST" class="review-form"
                               id="reviewForm">
                             @csrf
-
-
                             <input type="hidden" name="rating" id="ratingValue" value="0">
 
-                            {{-- Stars --}}
                             <div class="tt-stars" aria-label="Chọn số sao">
                                 @for ($i = 1; $i <= 5; $i++)
                                     <button type="button" class="tt-star" data-value="{{ $i }}"
@@ -83,7 +94,6 @@
                                     </button>
                                 @endfor
 
-
                                 <span class="tt-stars__label" id="ratingLabel">Chưa chọn</span>
                             </div>
 
@@ -94,13 +104,13 @@
                                 <button type="submit" class="btn btn-dark tt-btn">Gửi đánh giá</button>
                             </div>
                         </form>
+
                         <hr class="rv-divider">
 
                         <div class="rv-head">
                             <div class="rv-title">Đánh giá gần đây</div>
                             <div class="rv-meta">
-                                {{ $product->reviews->count() }} đánh giá
-                                •
+                                {{ $product->reviews->count() }} đánh giá •
                                 {{ number_format($product->reviews->avg('rating') ?? 0, 1) }}/5
                             </div>
                         </div>
@@ -108,8 +118,6 @@
                         <div class="rv-list">
                             @forelse($product->reviews->sortByDesc('created_at') as $rv)
                                 <div class="rv-item">
-
-                                    {{-- HEADER --}}
                                     <div class="rv-top">
                                         <div class="rv-anon">
                                             <span class="rv-anon-icon">👤</span>
@@ -123,31 +131,63 @@
                                         </div>
                                     </div>
 
-                                    {{-- CONTENT --}}
                                     <div class="rv-content">
                                         {{ $rv->content ?? '—' }}
                                     </div>
 
-                                    {{-- FOOTER --}}
                                     <div class="rv-time">
                                         {{ $rv->created_at?->format('d/m/Y H:i') }}
                                     </div>
-
                                 </div>
                             @empty
-                                <div class="rv-emptybox">
-                                    Chưa có đánh giá nào.
-                                </div>
+                                <div class="rv-emptybox">Chưa có đánh giá nào.</div>
                             @endforelse
                         </div>
-
-
                     </div>
                 </div>
 
-            </div>
+            </div> {{-- end .pd-panels --}}
         </div>
     </div>
+
+    {{-- ✅ GỢI Ý FULL WIDTH (ngoài container để trải màn hình) --}}
+    @if(!empty($suggestProducts) && $suggestProducts->count())
+        <div class="pd-suggest-full">
+            <div class="container">
+                <h3 class="pd-title">Gợi ý cho bạn</h3>
+
+                <div class="suggest-grid-full">
+                    @foreach($suggestProducts as $sp)
+                        <a href="{{ route('products.show', $sp->id) }}" class="suggest-item">
+                            <img src="{{ asset('uploads/' . $sp->image) }}" alt="{{ $sp->name }}">
+                            <div class="suggest-name">{{ $sp->name }}</div>
+                            @php
+                                $price   = (int) $product->price;
+                                $percent = (int) ($product->discount_percent ?? 0);
+                                $final   = (int) ($product->final_price ?? $price);
+                            @endphp
+
+                            <div class="price-box">
+                                @if($percent > 0 && $final < $price)
+                                    <div class="price-box__row">
+                                        <span class="price-box__sale">{{ number_format($final) }} đ</span>
+                                        <span class="price-box__badge">-{{ $percent }}%</span>
+                                    </div>
+                                    <div class="price-box__old">{{ number_format($price) }} đ</div>
+                                @else
+                                    <div class="price-box__row">
+                                        <span class="price-box__sale">{{ number_format($price) }} đ</span>
+                                    </div>
+                                @endif
+                            </div>
+
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    @endif
+
 
     <script>
         // ===== QTY =====
@@ -196,19 +236,13 @@
             });
         }
 
-        // ===== STAR RATING (TikTok-like) =====
+        // ===== STAR RATING =====
         const starButtons = document.querySelectorAll('.tt-star');
         const ratingValue = document.getElementById('ratingValue');
         const ratingLabel = document.getElementById('ratingLabel');
         const reviewForm = document.getElementById('reviewForm');
 
-        const ratingTextMap = {
-            1: 'Rất tệ',
-            2: 'Tệ',
-            3: 'Ổn',
-            4: 'Tốt',
-            5: 'Xuất sắc'
-        };
+        const ratingTextMap = {1: 'Rất tệ', 2: 'Tệ', 3: 'Ổn', 4: 'Tốt', 5: 'Xuất sắc'};
 
         function paintStars(val) {
             starButtons.forEach(btn => {
@@ -230,13 +264,11 @@
             starButtons.forEach(btn => {
                 const v = Number(btn.dataset.value);
 
-                // click = chọn thật
                 btn.addEventListener('click', () => {
                     ratingValue.value = v;
                     renderSelected(v);
                 });
 
-                // hover preview (chỉ preview sao)
                 btn.addEventListener('mouseenter', () => paintStars(v));
                 btn.addEventListener('mouseleave', () => paintStars(getSelected()));
             });
@@ -244,7 +276,6 @@
             renderSelected(getSelected());
         }
 
-        // chặn submit nếu chưa chọn sao
         if (reviewForm && ratingValue) {
             reviewForm.addEventListener('submit', (e) => {
                 if ((Number(ratingValue.value) || 0) <= 0) {
@@ -253,6 +284,31 @@
                 }
             });
         }
-    </script>
 
+        // ===== DESC: CLAMP + TOGGLE =====
+        const descText = document.getElementById('descText');
+        const descToggle = document.getElementById('descToggle');
+
+        function isClamped(el) {
+            return el && (el.scrollHeight > el.clientHeight + 1);
+        }
+
+        function initDescToggle() {
+            if (!descText || !descToggle) return;
+
+            descText.classList.add('is-clamp');
+
+            requestAnimationFrame(() => {
+                descToggle.style.display = isClamped(descText) ? 'inline-block' : 'none';
+            });
+
+            descToggle.addEventListener('click', () => {
+                const isClampNow = descText.classList.contains('is-clamp');
+                descText.classList.toggle('is-clamp', !isClampNow);
+                descToggle.textContent = isClampNow ? 'Thu gọn' : 'Xem thêm';
+            });
+        }
+
+        initDescToggle();
+    </script>
 @endsection

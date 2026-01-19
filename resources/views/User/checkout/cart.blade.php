@@ -93,10 +93,11 @@
                         Chọn tất cả
                     </button>
 
-                    <button type="button" class="btn btn-outline-danger disabled" id="btnDeleteSelected"
+                    <button type="button" class="btn btn-outline-danger" id="btnDeleteSelected" disabled
                             aria-disabled="true">
                         Xóa đơn hàng
                     </button>
+
                 </div>
 
                 <div class="cart-summary__right">
@@ -147,6 +148,8 @@
 
         function setBtnState(btn, enabled) {
             btn.disabled = !enabled;
+            btn.classList.toggle('disabled', !enabled);
+            btn.setAttribute('aria-disabled', (!enabled).toString());
         }
 
 

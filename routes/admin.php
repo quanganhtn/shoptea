@@ -74,7 +74,7 @@ Route::prefix('admin')
         /* ================= INBOX ================= */
         Route::prefix('inbox')->name('inbox.')->group(function () {
 
-            
+
             Route::get('/unread-count', [AdminInboxController::class, 'unreadCount'])
                 ->name('unreadCount');
 

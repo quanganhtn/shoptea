@@ -61,7 +61,7 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'stock' => 'required|integer|min:0', // ✅ thêm
+            'stock' => 'required|integer|min:0',
             'description' => 'nullable|string',
             'image' => 'nullable',
             'category_id' => 'required|exists:categories,id',
@@ -70,7 +70,7 @@ class ProductController extends Controller
         Product::create([
             'name' => $request->name,
             'price' => $request->price,
-            'stock' => $request->stock, // ✅ thêm
+            'stock' => $request->stock,
             'description' => $request->description,
             'image' => $request->image,
             'category_id' => $request->category_id,

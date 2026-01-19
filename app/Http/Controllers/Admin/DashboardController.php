@@ -19,14 +19,19 @@ class DashboardController extends Controller
         // Danh mục
         $totalCategories = Category::count();
 
-        // admin: đếm theo role
-        $totalAdmins = User::where('role', 'admin')->count();
-        // User: đếm theo role
-        $totalNormalUsers = User::where(function ($q) {
-            $q->whereNull('role')->orWhere('role', 'user');
-        })->count();//đếm tất cả user mà ko có role là admin
+        $adminRoleId = \DB::table('roles')->where('name', 'admin')->value('id');
+
+        // admin: đếm theo role_id
+        $totalAdmins = User::where('role_id', $adminRoleId)->count();
+
+        // user thường: role_id null hoặc khác admin
+        $totalNormalUsers = User::where(function ($q) use ($adminRoleId) {
+            $q->whereNull('role_id')
+                ->orWhere('role_id', '!=', $adminRoleId);
+        })->count();
 
         $totalUsers = $totalAdmins + $totalNormalUsers;
+
 
         // Orders theo status
         $ordersPending = Order::where('status', 'pending')->count(); //chờ xác nhận
@@ -45,7 +50,7 @@ class DashboardController extends Controller
 
         //tổng doanh thu
         $revenueAll = Order::where('status', 'completed')->sum('total_price');
-        
+
         // các thống kê bạn đã có...
         $ordersToday = \App\Models\Order::whereDate('created_at', today())->count();
 
